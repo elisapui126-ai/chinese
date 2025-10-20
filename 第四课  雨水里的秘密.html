@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第四课 雨水里的秘密｜听写生词字卡</title>
+<style>
+:root{
+  --bg1: #e8f9e9;
+  --bg2: #f6fff6;
+  --card-bg-front: #e6fff1;
+  --card-bg-back: #ffffff;
+  --btn-bg: #1e90ff;
+  --btn-text: #fff;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#233;}
+.header{text-align:center;padding:14px 12px;font-size:18px;background:#b8e4c9;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.08);}
+.wrapper{min-height:calc(100vh - 140px);display:flex;align-items:center;justify-content:center;padding:16px;padding-bottom:140px;}
+.card-area{width:92%;max-width:460px;display:flex;justify-content:center;align-items:center;}
+.card{width:100%;max-width:420px;height:320px;perspective:1200px;position:relative;user-select:none;}
+.inner{width:100%;height:100%;position:relative;transition:transform 0.75s cubic-bezier(.2,.9,.3,1);transform-style: preserve-3d;}
+.card.flipped .inner{transform: rotateY(180deg) scale(1.05);}
+.face{position:absolute;inset:0;border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,0.12);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;}
+.front{background: var(--card-bg-front);}
+.back{background: var(--card-bg-back);transform: rotateY(180deg);}
+.pinyin{font-size:48px;line-height:1.0;color:#2a9d66;letter-spacing:2px;text-align:center;word-break:break-word;padding:6px 8px;font-weight:600;}
+.speaker-btn{margin-top:10px;background:transparent;border:none;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;}
+.speaker-btn:active{transform:scale(0.98);}
+.speaker-icon{width:26px;height:26px;fill: #1e90ff;}
+.lesson{position:absolute;right:14px;bottom:12px;font-size:13px;color:#666;}
+.word{font-family:"KaiTi","SimKai","楷体";font-size:34px;color:#111;margin-bottom:6px;text-align:center;word-break:break-word;}
+.meaning{font-size:20px;color:green;margin-bottom:10px;text-align:center;}
+.sentence{font-family:"KaiTi","SimKai","楷体";font-size:17px;color:#333;text-align:center;padding:0 8px;line-height:1.35;}
+.sentence .speak-inline{margin-left:8px;vertical-align:middle;}
+.translation{margin-top:6px;font-size:15px;color:#555;text-align:center;}
+.nav{position:fixed;left:0;right:0;bottom:18px;display:flex;flex-direction:column;justify-content:center;pointer-events: auto;}
+.nav-inner{display:flex;gap:20px;align-items:center;justify-content:center;background:rgba(255,255,255,0.0);padding:6px 12px;}
+.nav button{background:var(--btn-bg);color:var(--btn-text);border:none;padding:12px 22px;border-radius:12px;font-size:16px;box-shadow:0 6px 16px rgba(30,144,255,0.18);cursor:pointer;}
+.nav button:active{transform:translateY(1px);}
+.counter{margin-top:6px;text-align:center;font-size:13px;color:#444;}
+.dots span{display:inline-block;width:10px;height:10px;margin:0 4px;border-radius:50%;background:#c0c0c0;transition:all 0.3s;}
+.dots span.active{background:#1e90ff;transform:scale(1.3);}
+@media(max-width:420px){
+  .card { height:360px; border-radius:18px; }
+  .pinyin { font-size:54px; }
+  .word { font-size:36px; }
+  .meaning { font-size:18px; }
+  .sentence { font-size:18px; }
+  .nav button { padding:12px 18px; font-size:17px; border-radius:14px; }
+  .dots span { width:12px; height:12px; margin:0 3px; }
+  .header { font-size:16px; padding:12px 8px; }
+}
+</style>
+</head>
+<body>
+<div class="header">第四课 雨水里的秘密｜听写生词字卡</div>
+<div class="wrapper">
+  <div class="card-area" aria-live="polite">
+    <div class="card" id="card" role="button" aria-pressed="false" tabindex="0" aria-label="单张字卡">
+      <div class="inner" id="inner"></div>
+    </div>
+  </div>
+</div>
+<div class="nav" role="navigation" aria-label="卡片导航">
+  <div class="nav-inner">
+    <button id="prevBtn" aria-label="上一页">⬅ 上一张</button>
+    <div class="counter" id="counter">1 / 17</div>
+    <button id="nextBtn" aria-label="下一张">下一张 ➡</button>
+  </div>
+  <div class="dots" id="dotsContainer"></div>
+</div>
+
+<script>
+const words=[
+{word:"念头", pinyin:"niàn tou", meaning:"idea", sentence:"姐姐突然萌生了出国读书的念头。", en:"My sister suddenly had the idea of studying abroad."},
+{word:"显微镜", pinyin:"xiǎn wēi jìng", meaning:"microscope", sentence:"我用显微镜观察小虫子。", en:"I use a microscope to observe tiny insects."},
+{word:"观察", pinyin:"guān chá", meaning:"observe", sentence:"我们仔细观察了雨水的变化。", en:"We carefully observed the changes in the rainwater."},
+{word:"奇形怪状", pinyin:"qí xíng guài zhuàng", meaning:"strange shapes", sentence:"那条河里有很多奇形怪状的石头。", en:"There are many stones with strange shapes in that river."},
+{word:"仍然", pinyin:"réng rán", meaning:"still", sentence:"志明生病了，他仍然要去学校。", en:"Zhiming is sick, but he still goes to school."},
+{word:"结论", pinyin:"jié lùn", meaning:"conclusion", sentence:"经过讨论后，我们得出了一个结论。", en:"After discussion, we reached a conclusion."},
+{word:"显而易见", pinyin:"xiǎn ér yì jiàn", meaning:"apparently easy to see", sentence:"这个问题显而易见，我们不需要再讨论了。", en:"This problem is obvious; we don't need to discuss it again."},
+{word:"详细", pinyin:"xiáng xì", meaning:"details", sentence:"老师给我们讲解了详细的步骤。", en:"The teacher explained the steps in detail."},
+{word:"记录", pinyin:"jì lù", meaning:"record", sentence:"我记录下了实验的结果。", en:"I recorded the results of the experiment."},
+{word:"奇怪", pinyin:"qí guài", meaning:"weird", sentence:"他做了一个奇怪的动作。", en:"He did a weird movement."},
+{word:"确实", pinyin:"què shí", meaning:"absolutely", sentence:"这件事确实很重要。", en:"This matter is absolutely important."},
+{word:"不可思议", pinyin:"bù kě sī yì", meaning:"unbelievable", sentence:"雪人出现在屋顶上，真不可思议。", en:"A snowman appeared on the roof; it's truly unbelievable."},
+{word:"牙齿", pinyin:"yá chǐ", meaning:"teeth", sentence:"小猫露出尖尖的牙齿。", en:"The kitten showed its sharp teeth."},
+{word:"沉思", pinyin:"chén sī", meaning:"meditation/ponder", sentence:"他坐在窗边沉思。", en:"He sat by the window in meditation."},
+{word:"居民", pinyin:"jū mín", meaning:"residents", sentence:"居民们在街上散步。", en:"The residents are walking on the street."},
+{word:"权威", pinyin:"quán wēi", meaning:"authority", sentence:"刘医生是医院心脏科的权威，受人尊敬。", en:"Dr. Liu is an authority in the hospital's cardiology department and is respected."},
+{word:"激动", pinyin:"jī dòng", meaning:"excitement", sentence:"收到消息后，他很激动。", en:"He was very excited after receiving the news."}
+];
+
+let currentIndex=0;
+const card=document.getElementById("card");
+const inner=document.getElementById("inner");
+const counter=document.getElementById("counter");
+const dotsContainer=document.getElementById("dotsContainer");
+
+function renderCard(){
+  const w=words[currentIndex];
+  inner.innerHTML=`
+    <div class="face front">
+      <div class="pinyin">${w.pinyin}</div>
+      <button class="speaker-btn" onclick="speakPinyin('${w.word}', event)">
+        <svg class="speaker-icon" viewBox="0 0 24 24"><path d="M5 9v6h4l5 5V4l-5 5H5z"/></svg>
+      </button>
+      <div class="lesson">第四课 雨水里的秘密</div>
+    </div>
+    <div class="face back">
+      <div class="word">${w.word}</div>
+      <div class="meaning">${w.meaning}</div>
+      <div class="sentence">${w.sentence}<button class="speaker-btn speak-inline" onclick="speakSentence('${w.sentence}', event)">
+        <svg class="speaker-icon" viewBox="0 0 24 24"><path d="M5 9v6h4l5 5V4l-5 5H5z"/></svg>
+      </button></div>
+      <div class="translation">${w.en}</div>
+      <div class="lesson">第四课 雨水里的秘密</div>
+    </div>
+  `;
+  updateCounter();
+}
+
+function updateCounter(){
+  counter.textContent=`${currentIndex+1} / ${words.length}`;
+  dotsContainer.innerHTML=words.map((_,i)=>`<span class="${i===currentIndex?'active':''}"></span>`).join('');
+}
+
+function nextCard(){currentIndex=(currentIndex+1)%words.length;renderCard();}
+function prevCard(){currentIndex=(currentIndex-1+words.length)%words.length;renderCard();}
+document.getElementById("nextBtn").addEventListener("click",nextCard);
+document.getElementById("prevBtn").addEventListener("click",prevCard);
+
+// 点击空白翻面
+card.addEventListener("click",(e)=>{
+  if(!e.target.closest(".speaker-btn")){
+    card.classList.toggle("flipped");
+  }
+});
+
+// 播放拼音中文朗读
+function speakPinyin(text,event){
+  if(event) event.stopPropagation();
+  const utter=new SpeechSynthesisUtterance(text);
+  utter.lang="zh-CN"; utter.rate=0.5; utter.volume=1;
+  const voices=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('zh'));
+  if(voices.length>0) utter.voice=voices[0];
+  speechSynthesis.speak(utter);
+}
+
+// 播放造句中文朗读
+function speakSentence(text,event){
+  if(event) event.stopPropagation();
+  const utter=new SpeechSynthesisUtterance(text);
+  utter.lang="zh-CN"; utter.rate=0.6; utter.volume=1;
+  const voices=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('zh'));
+  if(voices.length>0) utter.voice=voices[0];
+  speechSynthesis.speak(utter);
+}
+
+window.speechSynthesis.onvoiceschanged=()=>{console.log("语音列表已更新");};
+
+renderCard();
+</script>
+</body>
+</html>
